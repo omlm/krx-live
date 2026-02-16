@@ -34,7 +34,8 @@ export async function loadUserConcerts(userId: string): Promise<Concert[]> {
     .map((uc: any) => ({
       ...uc.concert,
       user_status: uc.status,
-    }));
+    }))
+    .sort((a: any, b: any) => a.date.localeCompare(b.date));
 }
 
 export async function getUserConcertStatuses(userId: string): Promise<Record<string, ConcertStatus>> {
