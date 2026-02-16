@@ -9,11 +9,12 @@ interface ConcertListProps {
   onStatusChange?: (concertId: string, status: ConcertStatus | null) => void;
   onInvite?: (concertId: string) => void;
   onEdit?: (concertId: string, data: any) => Promise<void>;
+  onDelete?: (concertId: string) => Promise<void>;
   isAdmin?: boolean;
   resetKey?: string;
 }
 
-export function ConcertList({ concerts, statuses, sentInvitations, onStatusChange, onInvite, onEdit, isAdmin, resetKey = '' }: ConcertListProps) {
+export function ConcertList({ concerts, statuses, sentInvitations, onStatusChange, onInvite, onEdit, onDelete, isAdmin, resetKey = '' }: ConcertListProps) {
   return (
     <div className="px-4 pb-8">
       <div className="space-y-5">
@@ -26,6 +27,7 @@ export function ConcertList({ concerts, statuses, sentInvitations, onStatusChang
             onStatusChange={onStatusChange}
             onInvite={onInvite}
             onEdit={onEdit}
+            onDelete={onDelete}
             isAdmin={isAdmin}
           />
         ))}

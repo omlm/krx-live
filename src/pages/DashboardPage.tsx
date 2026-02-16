@@ -18,7 +18,6 @@ import {
   sendInvitation,
   loadAllUsers,
   addConcert,
-  updateConcert,
   loadSentInvitations,
 } from '../lib/api';
 
@@ -108,11 +107,6 @@ export function DashboardPage() {
     } catch (error) {
       setFormError(error instanceof Error ? error.message : 'Kunne ikke legge til konsert');
     }
-  }
-
-  async function handleEditConcert(concertId: string, data: any) {
-    await updateConcert(concertId, data);
-    await loadData();
   }
 
   async function handleInvite(toUserId: string) {
@@ -222,8 +216,6 @@ export function DashboardPage() {
           sentInvitations={sentInvitations}
           onStatusChange={handleStatusChange}
           onInvite={(id) => setInviteConcertId(id)}
-          onEdit={handleEditConcert}
-          isAdmin={user?.is_admin}
           resetKey={activeTab}
         />
 

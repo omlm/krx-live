@@ -10,6 +10,7 @@ interface ConcertExpandCardProps {
   onStatusChange?: (concertId: string, status: ConcertStatus | null) => void;
   onInvite?: (concertId: string) => void;
   onEdit?: (concertId: string, data: any) => Promise<void>;
+  onDelete?: (concertId: string) => Promise<void>;
   isAdmin?: boolean;
 }
 
@@ -20,6 +21,7 @@ export function ConcertExpandCard({
   onStatusChange,
   onInvite,
   onEdit,
+  onDelete,
   isAdmin,
 }: ConcertExpandCardProps) {
   const [expanded, setExpanded] = useState(false);
@@ -197,6 +199,18 @@ export function ConcertExpandCard({
                         className="px-3 py-1.5 text-xs font-bold uppercase tracking-wide bg-white/10 text-white/50 hover:bg-white/20 transition-colors"
                       >
                         Endre
+                      </button>
+                    )}
+                    {isAdmin && onDelete && (
+                      <button
+                        onClick={() => {
+                          if (window.confirm(`Slette ${concert.artist_name}?`)) {
+                            onDelete(concert.id);
+                          }
+                        }}
+                        className="px-3 py-1.5 text-xs font-bold uppercase tracking-wide bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors"
+                      >
+                        Slett
                       </button>
                     )}
                   </div>
