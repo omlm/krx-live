@@ -7,6 +7,7 @@ import { LoginPage } from './pages/LoginPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { ConcertsPage } from './pages/ConcertsPage'
 import { AdminPage } from './pages/AdminPage'
+import { Analytics } from '@vercel/analytics/react'
 import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
@@ -41,6 +42,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           />
         </Routes>
       </AuthProvider>
+      <Analytics />
     </BrowserRouter>
   </React.StrictMode>,
 )
