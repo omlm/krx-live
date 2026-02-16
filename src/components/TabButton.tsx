@@ -8,7 +8,7 @@ export function TabButton({ active, onClick, children }: TabButtonProps) {
   return (
     <button
       onClick={onClick}
-      className={`flex-1 py-3 px-4 text-sm font-bold uppercase tracking-wide transition-colors ${
+      className={`flex-1 py-3 px-2 sm:px-4 text-xs sm:text-sm font-bold uppercase tracking-wide transition-colors ${
         active
           ? 'bg-white text-black'
           : 'bg-white/20 text-white hover:bg-white/30'

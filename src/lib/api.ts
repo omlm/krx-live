@@ -89,6 +89,21 @@ export async function addConcert(
   return data;
 }
 
+export async function updateConcert(
+  id: string,
+  updates: Partial<Omit<Concert, 'id' | 'created_at' | 'user_status'>>,
+): Promise<Concert> {
+  const { data, error } = await supabase
+    .from('concerts')
+    .update(updates)
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
 export async function deleteConcert(id: string): Promise<void> {
   const { error } = await supabase.from('concerts').delete().eq('id', id);
   if (error) throw error;

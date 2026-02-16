@@ -61,8 +61,8 @@ function App() {
       {/* Innhold */}
       <div className="relative z-10">
         {/* Header */}
-        <header className="pt-8 pb-6 px-4 flex items-baseline justify-between">
-          <h1 className="text-white text-5xl font-black tracking-tight">
+        <header className="pt-8 pb-6 px-4 flex items-baseline justify-between gap-2">
+          <h1 className="text-white text-4xl sm:text-5xl font-black tracking-tight">
             KRX LIVE
           </h1>
           <Link
@@ -80,13 +80,13 @@ function App() {
               active={activeTab === 'going'}
               onClick={() => setActiveTab('going')}
             >
-              SKAL GÅ PÅ
+              MINE KONSERTER
             </TabButton>
             <TabButton
               active={activeTab === 'interested'}
               onClick={() => setActiveTab('interested')}
             >
-              KANSKJE GÅ PÅ
+              ALLE
             </TabButton>
           </div>
         </div>

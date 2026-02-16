@@ -2,17 +2,37 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Concert, ConcertStatus } from '../types/concert';
-import { Invitation } from '../types/user';
+import { Invitation, User } from '../types/user';
 import { ConcertList } from '../components/ConcertList';
+import { ConcertForm } from '../components/ConcertForm';
 import { TabButton } from '../components/TabButton';
 import { InvitationCard } from '../components/InvitationCard';
-import { loadUserConcerts, loadPendingInvitations, respondToInvitation } from '../lib/api';
+import { InviteModal } from '../components/InviteModal';
+import {
+  loadUserConcerts,
+  loadAllConcerts,
+  getUserConcertStatuses,
+  setUserConcertStatus,
+  loadPendingInvitations,
+  respondToInvitation,
+  sendInvitation,
+  loadAllUsers,
+  addConcert,
+  updateConcert,
+} from '../lib/api';
 
 export function DashboardPage() {
   const { user, logout } = useAuth();
-  const [activeTab, setActiveTab] = useState<ConcertStatus>('going');
-  const [concerts, setConcerts] = useState<Concert[]>([]);
+  const [activeTab, setActiveTab] = useState<'mine' | 'alle'>('mine');
+  const [myConcerts, setMyConcerts] = useState<Concert[]>([]);
+  const [allConcerts, setAllConcerts] = useState<Concert[]>([]);
+  const [statuses, setStatuses] = useState<Record<string, ConcertStatus>>({});
+  const [users, setUsers] = useState<User[]>([]);
   const [invitations, setInvitations] = useState<Invitation[]>([]);
+  const [inviteConcertId, setInviteConcertId] = useState<string | null>(null);
+  const [showForm, setShowForm] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [formSuccess, setFormSuccess] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -21,12 +41,18 @@ export function DashboardPage() {
 
   async function loadData() {
     try {
-      const [concertsData, invitationsData] = await Promise.all([
+      const [myData, allData, statusData, invData, usersData] = await Promise.all([
         loadUserConcerts(user!.id),
+        loadAllConcerts(),
+        getUserConcertStatuses(user!.id),
         loadPendingInvitations(user!.id),
+        loadAllUsers(),
       ]);
-      setConcerts(concertsData);
-      setInvitations(invitationsData);
+      setMyConcerts(myData);
+      setAllConcerts(allData);
+      setStatuses(statusData);
+      setInvitations(invData);
+      setUsers(usersData.filter(u => u.id !== user!.id));
     } catch (error) {
       console.error('Feil ved lasting:', error);
     } finally {
@@ -41,16 +67,56 @@ export function DashboardPage() {
   ) {
     try {
       await respondToInvitation(invitationId, response, user!.id, concertId);
-      // Reload data
       await loadData();
     } catch (error) {
       console.error('Feil ved svar på invitasjon:', error);
     }
   }
 
-  const filteredConcerts = concerts.filter(
-    (concert) => concert.user_status === activeTab
-  );
+  async function handleStatusChange(concertId: string, status: ConcertStatus | null) {
+    try {
+      await setUserConcertStatus(user!.id, concertId, status);
+      if (status === null) {
+        const newStatuses = { ...statuses };
+        delete newStatuses[concertId];
+        setStatuses(newStatuses);
+      } else {
+        setStatuses(prev => ({ ...prev, [concertId]: status }));
+      }
+      // Reload my concerts to reflect changes
+      const myData = await loadUserConcerts(user!.id);
+      setMyConcerts(myData);
+    } catch (error) {
+      console.error('Feil ved endring av status:', error);
+    }
+  }
+
+  async function handleAddConcert(data: any) {
+    setFormError(null);
+    setFormSuccess(null);
+    try {
+      const { status: _s, user_status: _us, ...concertData } = data;
+      const newConcert = await addConcert({ ...concertData, added_by: user!.id });
+      await setUserConcertStatus(user!.id, newConcert.id, 'going');
+      setFormSuccess('Konsert lagt til!');
+      setShowForm(false);
+      await loadData();
+    } catch (error) {
+      setFormError(error instanceof Error ? error.message : 'Kunne ikke legge til konsert');
+    }
+  }
+
+  async function handleEditConcert(concertId: string, data: any) {
+    await updateConcert(concertId, data);
+    await loadData();
+  }
+
+  async function handleInvite(toUserId: string) {
+    if (!inviteConcertId) return;
+    await sendInvitation(user!.id, toUserId, inviteConcertId);
+  }
+
+  const displayConcerts = activeTab === 'mine' ? myConcerts : allConcerts;
 
   if (loading) {
     return (
@@ -64,49 +130,48 @@ export function DashboardPage() {
     <div className="min-h-screen bg-black relative">
       {/* Bakgrunnsbilde med overlay */}
       <div
-        className="fixed inset-0 bg-cover bg-center opacity-30"
+        className="fixed inset-0 bg-cover bg-center bg-no-repeat opacity-30"
         style={{
-          backgroundImage: 'url(https://images.unsplash.com/photo-1501612780327-45045538702b?w=1200)',
+          backgroundImage: 'url(/bg.jpg)',
+          backgroundPosition: 'center 20%',
         }}
       />
       <div className="fixed inset-0 bg-black/50" />
 
-      <div className="relative z-10">
+      <div className="relative z-10 max-w-[600px] mx-auto">
         {/* Header */}
         <header className="pt-8 pb-4 px-4">
-          <div className="flex items-baseline justify-between mb-1">
-            <h1 className="text-white text-5xl font-black tracking-tight">
+          <div className="flex items-baseline justify-between gap-2 mb-1">
+            <h1 className="text-white text-4xl sm:text-5xl font-black tracking-tight">
               KRX LIVE
             </h1>
-            <div className="flex items-center gap-3">
-              <Link
-                to="/concerts"
-                className="text-white/50 text-xs font-bold uppercase tracking-wide hover:text-white/80 transition-colors"
-              >
-                Alle konserter
-              </Link>
-              {user?.is_admin && (
-                <Link
-                  to="/admin"
-                  className="text-white/30 text-xs font-bold uppercase tracking-wide hover:text-white/60 transition-colors"
-                >
-                  Admin
-                </Link>
-              )}
-            </div>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-white/40 text-xs uppercase tracking-widest">
-              Hei, {user?.name}
-            </span>
             <button
-              onClick={logout}
-              className="text-white/30 text-xs uppercase tracking-wide hover:text-white/60 transition-colors"
+              onClick={() => setShowForm(!showForm)}
+              className={`px-4 py-2 text-xs sm:text-sm font-bold uppercase tracking-wide transition-colors shrink-0 ${showForm ? 'bg-white/20 text-white hover:bg-white/30' : 'bg-green-500/30 text-green-400 hover:bg-green-500/40'}`}
             >
-              Logg ut
+              {showForm ? 'Avbryt' : 'Ny konsert'}
             </button>
           </div>
         </header>
+
+        {/* Add concert form */}
+        {showForm && (
+          <div className="px-4 mb-6">
+            <ConcertForm
+              onSubmit={handleAddConcert}
+              error={formError}
+              success={formSuccess}
+            />
+          </div>
+        )}
+
+        {formSuccess && !showForm && (
+          <div className="px-4 mb-6">
+            <div className="text-green-400 text-sm bg-green-400/10 px-4 py-2">
+              {formSuccess}
+            </div>
+          </div>
+        )}
 
         {/* Invitations */}
         {invitations.length > 0 && (
@@ -130,23 +195,58 @@ export function DashboardPage() {
         <div className="px-4 mb-6">
           <div className="flex gap-2 rounded-full overflow-hidden">
             <TabButton
-              active={activeTab === 'going'}
-              onClick={() => setActiveTab('going')}
+              active={activeTab === 'mine'}
+              onClick={() => setActiveTab('mine')}
             >
-              SKAL GÅ PÅ
+              MINE KONSERTER
             </TabButton>
             <TabButton
-              active={activeTab === 'interested'}
-              onClick={() => setActiveTab('interested')}
+              active={activeTab === 'alle'}
+              onClick={() => setActiveTab('alle')}
             >
-              KANSKJE GÅ PÅ
+              ALLE
             </TabButton>
           </div>
         </div>
 
         {/* Concert List */}
-        <ConcertList concerts={filteredConcerts} />
+        <ConcertList
+          concerts={displayConcerts}
+          statuses={statuses}
+          onStatusChange={handleStatusChange}
+          onInvite={(id) => setInviteConcertId(id)}
+          onEdit={handleEditConcert}
+          isAdmin={user?.is_admin}
+          resetKey={activeTab}
+        />
+
+        {/* Footer */}
+        <footer className="px-4 py-8 flex items-center justify-center gap-4">
+          <button
+            onClick={logout}
+            className="text-white/30 text-xs uppercase tracking-wide hover:text-white/60 transition-colors"
+          >
+            Logg ut
+          </button>
+          {user?.is_admin && (
+            <Link
+              to="/admin"
+              className="text-white/30 text-xs uppercase tracking-wide hover:text-white/60 transition-colors"
+            >
+              Admin
+            </Link>
+          )}
+        </footer>
       </div>
+
+      {/* Invite modal */}
+      {inviteConcertId && (
+        <InviteModal
+          users={users}
+          onInvite={handleInvite}
+          onClose={() => setInviteConcertId(null)}
+        />
+      )}
     </div>
   );
 }

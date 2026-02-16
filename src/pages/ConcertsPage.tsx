@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { Concert, ConcertStatus } from '../types/concert';
 import { User } from '../types/user';
 import { InviteModal } from '../components/InviteModal';
+import { ConcertExpandCard } from '../components/ConcertExpandCard';
 import { ConcertForm } from '../components/ConcertForm';
 import { groupConcertsByDate } from '../lib/dateUtils';
 import {
@@ -66,10 +67,8 @@ export function ConcertsPage() {
     setFormError(null);
     setFormSuccess(null);
     try {
-      // Remove status and user_status from data before inserting
       const { status: _s, user_status: _us, ...concertData } = data;
       const newConcert = await addConcert({ ...concertData, added_by: user!.id });
-      // Set user status to going for the new concert
       await setUserConcertStatus(user!.id, newConcert.id, 'going');
       setFormSuccess('Konsert lagt til!');
       setShowForm(false);
@@ -98,13 +97,13 @@ export function ConcertsPage() {
     <div className="min-h-screen bg-black">
       <div className="max-w-2xl mx-auto px-4 py-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-white text-4xl font-black tracking-tight">
-            KRX LIVE <span className="text-white/50 text-lg font-bold">KONSERTER</span>
+        <div className="flex items-center justify-between gap-3 mb-6">
+          <h1 className="text-white text-3xl sm:text-4xl font-black tracking-tight min-w-0">
+            KRX LIVE <span className="text-white/50 text-base sm:text-lg font-bold">KONSERTER</span>
           </h1>
           <Link
             to="/"
-            className="bg-white/20 text-white px-4 py-2 text-sm font-bold uppercase tracking-wide hover:bg-white/30 transition-colors"
+            className="bg-white/20 text-white px-3 py-2 text-xs font-bold uppercase tracking-wide hover:bg-white/30 transition-colors shrink-0"
           >
             Tilbake
           </Link>
@@ -142,62 +141,16 @@ export function ConcertsPage() {
             <h2 className="text-white text-sm font-bold mb-3 uppercase tracking-widest px-0">
               {dateLabel}
             </h2>
-            <div className="space-y-2">
-              {dateConcerts.map((concert: Concert) => {
-                const myStatus = statuses[concert.id] || null;
-                return (
-                  <div
-                    key={concert.id}
-                    className="bg-white/5 px-4 py-3"
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1 min-w-0">
-                        <div className="text-white font-bold uppercase tracking-tight">
-                          {concert.artist_name}
-                        </div>
-                        <div className="text-white/60 text-sm">
-                          {concert.venue} &middot; {concert.time}
-                        </div>
-                        {concert.description && (
-                          <div className="text-white/40 text-xs mt-1 line-clamp-2">
-                            {concert.description}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex items-center gap-2 mt-3">
-                      <button
-                        onClick={() => handleStatusChange(concert.id, myStatus === 'going' ? null : 'going')}
-                        className={`px-3 py-1 text-xs font-bold uppercase tracking-wide transition-colors ${
-                          myStatus === 'going'
-                            ? 'bg-green-500/30 text-green-400'
-                            : 'bg-white/10 text-white/50 hover:bg-white/20'
-                        }`}
-                      >
-                        Skal gå
-                      </button>
-                      <button
-                        onClick={() => handleStatusChange(concert.id, myStatus === 'interested' ? null : 'interested')}
-                        className={`px-3 py-1 text-xs font-bold uppercase tracking-wide transition-colors ${
-                          myStatus === 'interested'
-                            ? 'bg-yellow-500/30 text-yellow-400'
-                            : 'bg-white/10 text-white/50 hover:bg-white/20'
-                        }`}
-                      >
-                        Kanskje
-                      </button>
-                      <button
-                        onClick={() => setInviteConcertId(concert.id)}
-                        className="px-3 py-1 text-xs font-bold uppercase tracking-wide bg-white/10 text-white/50 hover:bg-white/20 transition-colors"
-                      >
-                        Inviter
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
+            <div className="space-y-1">
+              {dateConcerts.map((concert: Concert) => (
+                <ConcertExpandCard
+                  key={concert.id}
+                  concert={concert}
+                  status={statuses[concert.id] || null}
+                  onStatusChange={handleStatusChange}
+                  onInvite={(id) => setInviteConcertId(id)}
+                />
+              ))}
             </div>
           </div>
         ))}

@@ -8,6 +8,7 @@ interface ConcertFormProps {
   error: string | null;
   success: string | null;
   initialData?: Partial<ConcertFormData>;
+  submitLabel?: string;
 }
 
 const initialFormState: ConcertFormData = {
@@ -22,7 +23,7 @@ const initialFormState: ConcertFormData = {
   original_url: '',
 };
 
-export function ConcertForm({ onSubmit, error, success, initialData }: ConcertFormProps) {
+export function ConcertForm({ onSubmit, error, success, initialData, submitLabel }: ConcertFormProps) {
   const [form, setForm] = useState<ConcertFormData>({
     ...initialFormState,
     ...initialData,
@@ -60,7 +61,7 @@ export function ConcertForm({ onSubmit, error, success, initialData }: ConcertFo
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label className={labelClass}>Artist *</label>
           <input
@@ -87,7 +88,7 @@ export function ConcertForm({ onSubmit, error, success, initialData }: ConcertFo
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-3">
         <div>
           <label className={labelClass}>Dato *</label>
           <input
@@ -112,7 +113,7 @@ export function ConcertForm({ onSubmit, error, success, initialData }: ConcertFo
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label className={labelClass}>Arrangør *</label>
           <input
@@ -190,7 +191,7 @@ export function ConcertForm({ onSubmit, error, success, initialData }: ConcertFo
         disabled={submitting}
         className="w-full bg-white text-black py-3 text-sm font-bold uppercase tracking-wide hover:bg-white/90 transition-colors disabled:opacity-50"
       >
-        {submitting ? 'Legger til...' : 'Legg til konsert'}
+        {submitting ? 'Lagrer...' : (submitLabel || 'Legg til konsert')}
       </button>
     </form>
   );
