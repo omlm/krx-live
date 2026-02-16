@@ -4,10 +4,16 @@ import { User, Invitation } from '../types/user';
 
 // --- Concerts ---
 
+function todayString(): string {
+  const now = new Date();
+  return now.toISOString().split('T')[0];
+}
+
 export async function loadAllConcerts(): Promise<Concert[]> {
   const { data, error } = await supabase
     .from('concerts')
     .select('*')
+    .gte('date', todayString())
     .order('date', { ascending: true });
 
   if (error) throw error;
@@ -15,6 +21,7 @@ export async function loadAllConcerts(): Promise<Concert[]> {
 }
 
 export async function loadUserConcerts(userId: string): Promise<Concert[]> {
+  const today = todayString();
   const { data, error } = await supabase
     .from('user_concerts')
     .select('status, concert:concerts(*)')
@@ -22,10 +29,12 @@ export async function loadUserConcerts(userId: string): Promise<Concert[]> {
 
   if (error) throw error;
 
-  return (data || []).map((uc: any) => ({
-    ...uc.concert,
-    user_status: uc.status,
-  }));
+  return (data || [])
+    .filter((uc: any) => uc.concert && uc.concert.date >= today)
+    .map((uc: any) => ({
+      ...uc.concert,
+      user_status: uc.status,
+    }));
 }
 
 export async function getUserConcertStatuses(userId: string): Promise<Record<string, ConcertStatus>> {
