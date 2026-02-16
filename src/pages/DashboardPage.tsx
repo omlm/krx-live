@@ -250,6 +250,7 @@ export function DashboardPage() {
       {inviteConcertId && (
         <InviteModal
           users={users}
+          sentInvitations={sentInvitations.filter(inv => inv.concert_id === inviteConcertId)}
           onInvite={handleInvite}
           onClose={() => setInviteConcertId(null)}
         />

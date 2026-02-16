@@ -1,16 +1,24 @@
 import { useState } from 'react';
 import { User } from '../types/user';
+import { SentInvitation } from '../types/user';
 
 interface InviteModalProps {
   users: User[];
+  sentInvitations?: SentInvitation[];
   onInvite: (toUserId: string) => Promise<void>;
   onClose: () => void;
 }
 
-export function InviteModal({ users, onInvite, onClose }: InviteModalProps) {
+export function InviteModal({ users, sentInvitations = [], onInvite, onClose }: InviteModalProps) {
   const [sending, setSending] = useState<string | null>(null);
   const [sent, setSent] = useState<Set<string>>(new Set());
   const [error, setError] = useState<string | null>(null);
+
+  // Build a map of user name -> invitation status
+  const invStatusByName: Record<string, string> = {};
+  sentInvitations.forEach((inv) => {
+    invStatusByName[inv.to_user_name] = inv.status;
+  });
 
   async function handleInvite(userId: string) {
     setSending(userId);
@@ -47,25 +55,33 @@ export function InviteModal({ users, onInvite, onClose }: InviteModalProps) {
               Ingen brukere å invitere
             </div>
           ) : (
-            users.map((user) => (
-              <div
-                key={user.id}
-                className="flex items-center justify-between px-3 py-2 hover:bg-white/5 transition-colors"
-              >
-                <span className="text-white text-sm">{user.name}</span>
-                {sent.has(user.id) ? (
-                  <span className="text-green-400 text-xs font-bold uppercase">Sendt</span>
-                ) : (
-                  <button
-                    onClick={() => handleInvite(user.id)}
-                    disabled={sending === user.id}
-                    className="text-white/60 text-xs font-bold uppercase tracking-wide hover:text-white transition-colors disabled:opacity-50"
-                  >
-                    {sending === user.id ? '...' : 'Inviter'}
-                  </button>
-                )}
-              </div>
-            ))
+            users.map((user) => {
+              const invStatus = invStatusByName[user.name];
+
+              return (
+                <div
+                  key={user.id}
+                  className="flex items-center justify-between px-3 py-2 hover:bg-white/5 transition-colors"
+                >
+                  <span className="text-white text-sm">{user.name}</span>
+                  {invStatus === 'accepted' ? (
+                    <span className="text-green-400 text-xs font-bold uppercase">Akseptert</span>
+                  ) : sent.has(user.id) || invStatus === 'pending' ? (
+                    <span className="text-white/40 text-xs font-bold uppercase">Sendt</span>
+                  ) : invStatus === 'declined' ? (
+                    <span className="text-red-400/60 text-xs font-bold uppercase">Avvist</span>
+                  ) : (
+                    <button
+                      onClick={() => handleInvite(user.id)}
+                      disabled={sending === user.id}
+                      className="text-white/60 text-xs font-bold uppercase tracking-wide hover:text-white transition-colors disabled:opacity-50"
+                    >
+                      {sending === user.id ? '...' : 'Inviter'}
+                    </button>
+                  )}
+                </div>
+              );
+            })
           )}
         </div>
 
