@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Concert, ConcertStatus } from '../types/concert';
-import { Invitation, User } from '../types/user';
+import { Invitation, SentInvitation, User } from '../types/user';
 import { ConcertList } from '../components/ConcertList';
 import { ConcertForm } from '../components/ConcertForm';
 import { TabButton } from '../components/TabButton';
@@ -19,6 +19,7 @@ import {
   loadAllUsers,
   addConcert,
   updateConcert,
+  loadSentInvitations,
 } from '../lib/api';
 
 export function DashboardPage() {
@@ -29,6 +30,7 @@ export function DashboardPage() {
   const [statuses, setStatuses] = useState<Record<string, ConcertStatus>>({});
   const [users, setUsers] = useState<User[]>([]);
   const [invitations, setInvitations] = useState<Invitation[]>([]);
+  const [sentInvitations, setSentInvitations] = useState<SentInvitation[]>([]);
   const [inviteConcertId, setInviteConcertId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
@@ -41,17 +43,19 @@ export function DashboardPage() {
 
   async function loadData() {
     try {
-      const [myData, allData, statusData, invData, usersData] = await Promise.all([
+      const [myData, allData, statusData, invData, sentData, usersData] = await Promise.all([
         loadUserConcerts(user!.id),
         loadAllConcerts(),
         getUserConcertStatuses(user!.id),
         loadPendingInvitations(user!.id),
+        loadSentInvitations(user!.id),
         loadAllUsers(),
       ]);
       setMyConcerts(myData);
       setAllConcerts(allData);
       setStatuses(statusData);
       setInvitations(invData);
+      setSentInvitations(sentData);
       setUsers(usersData.filter(u => u.id !== user!.id));
     } catch (error) {
       console.error('Feil ved lasting:', error);
@@ -114,6 +118,8 @@ export function DashboardPage() {
   async function handleInvite(toUserId: string) {
     if (!inviteConcertId) return;
     await sendInvitation(user!.id, toUserId, inviteConcertId);
+    const sentData = await loadSentInvitations(user!.id);
+    setSentInvitations(sentData);
   }
 
   const displayConcerts = activeTab === 'mine' ? myConcerts : allConcerts;
@@ -213,6 +219,7 @@ export function DashboardPage() {
         <ConcertList
           concerts={displayConcerts}
           statuses={statuses}
+          sentInvitations={sentInvitations}
           onStatusChange={handleStatusChange}
           onInvite={(id) => setInviteConcertId(id)}
           onEdit={handleEditConcert}

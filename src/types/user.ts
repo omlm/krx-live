@@ -26,3 +26,10 @@ export interface Invitation {
   from_user_name?: string;
   concert?: Concert;
 }
+
+export interface SentInvitation {
+  id: string;
+  concert_id: string;
+  to_user_name: string;
+  status: 'pending' | 'accepted' | 'declined';
+}

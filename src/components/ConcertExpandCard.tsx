@@ -1,10 +1,12 @@
 import { useState, useRef } from 'react';
 import { Concert, ConcertStatus } from '../types/concert';
+import { SentInvitation } from '../types/user';
 import { ConcertForm } from './ConcertForm';
 
 interface ConcertExpandCardProps {
   concert: Concert;
   status?: ConcertStatus | null;
+  sentInvitations?: SentInvitation[];
   onStatusChange?: (concertId: string, status: ConcertStatus | null) => void;
   onInvite?: (concertId: string) => void;
   onEdit?: (concertId: string, data: any) => Promise<void>;
@@ -14,6 +16,7 @@ interface ConcertExpandCardProps {
 export function ConcertExpandCard({
   concert,
   status = null,
+  sentInvitations,
   onStatusChange,
   onInvite,
   onEdit,
@@ -131,6 +134,31 @@ export function ConcertExpandCard({
                     <p className="text-white/30 text-xs mt-2 uppercase tracking-wide">
                       Arr: {concert.organizer}
                     </p>
+                  )}
+
+                  {/* Sent invitations */}
+                  {sentInvitations && sentInvitations.length > 0 && (
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-3">
+                      <span className="text-white/30 text-xs uppercase tracking-wide">Invitert:</span>
+                      {sentInvitations.map((inv) => (
+                        <span key={inv.id} className="flex items-center gap-1 text-xs">
+                          <span className="text-white/50">{inv.to_user_name}</span>
+                          {inv.status === 'accepted' && (
+                            <svg className="w-3.5 h-3.5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                          )}
+                          {inv.status === 'declined' && (
+                            <svg className="w-3.5 h-3.5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          )}
+                          {inv.status === 'pending' && (
+                            <span className="text-white/30 text-[10px]">...</span>
+                          )}
+                        </span>
+                      ))}
+                    </div>
                   )}
 
                   {/* Actions */}

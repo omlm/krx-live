@@ -1,6 +1,6 @@
 import { supabase } from './supabase';
 import { Concert, ConcertStatus } from '../types/concert';
-import { User, Invitation } from '../types/user';
+import { User, Invitation, SentInvitation } from '../types/user';
 
 // --- Concerts ---
 
@@ -164,6 +164,22 @@ export async function loadPendingInvitations(userId: string): Promise<Invitation
     ...inv,
     from_user_name: inv.from_user?.name,
     concert: inv.concert,
+  }));
+}
+
+export async function loadSentInvitations(userId: string): Promise<SentInvitation[]> {
+  const { data, error } = await supabase
+    .from('invitations')
+    .select('id, concert_id, status, to_user:users!to_user_id(name)')
+    .eq('from_user_id', userId);
+
+  if (error) throw error;
+
+  return (data || []).map((inv: any) => ({
+    id: inv.id,
+    concert_id: inv.concert_id,
+    to_user_name: inv.to_user?.name || 'Ukjent',
+    status: inv.status,
   }));
 }
 
