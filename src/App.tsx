@@ -75,7 +75,7 @@ function App() {
 
         {/* Tabs */}
         <div className="px-4 mb-6">
-          <div className="flex gap-2 rounded-full overflow-hidden">
+          <div className="flex gap-2">
             <TabButton
               active={activeTab === 'going'}
               onClick={() => setActiveTab('going')}

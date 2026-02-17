@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { Concert, ConcertStatus } from '../types/concert';
 import { Invitation, SentInvitation, User } from '../types/user';
 import { ConcertList } from '../components/ConcertList';
-import { ConcertForm } from '../components/ConcertForm';
+import { ConcertDrawer } from '../components/ConcertDrawer';
 import { TabButton } from '../components/TabButton';
 import { InvitationCard } from '../components/InvitationCard';
 import { InviteModal } from '../components/InviteModal';
@@ -146,24 +146,13 @@ export function DashboardPage() {
               KRX LIVE
             </h1>
             <button
-              onClick={() => setShowForm(!showForm)}
-              className={`px-4 py-2 text-xs sm:text-sm font-bold uppercase tracking-wide transition-colors shrink-0 ${showForm ? 'bg-white/20 text-white hover:bg-white/30' : 'bg-green-500/30 text-green-400 hover:bg-green-500/40'}`}
+              onClick={() => setShowForm(true)}
+              className="px-4 py-2 text-xs sm:text-sm font-bold uppercase tracking-wide transition-colors shrink-0 bg-green-500/30 text-green-400 hover:bg-green-500/40"
             >
-              {showForm ? 'Avbryt' : 'Ny konsert'}
+              Ny konsert
             </button>
           </div>
         </header>
-
-        {/* Add concert form */}
-        {showForm && (
-          <div className="px-4 mb-6">
-            <ConcertForm
-              onSubmit={handleAddConcert}
-              error={formError}
-              success={formSuccess}
-            />
-          </div>
-        )}
 
         {formSuccess && !showForm && (
           <div className="px-4 mb-6">
@@ -193,7 +182,7 @@ export function DashboardPage() {
 
         {/* Tabs */}
         <div className="px-4 mb-6">
-          <div className="flex gap-2 rounded-full overflow-hidden">
+          <div className="flex gap-2">
             <TabButton
               active={activeTab === 'mine'}
               onClick={() => setActiveTab('mine')}
@@ -237,6 +226,15 @@ export function DashboardPage() {
           )}
         </footer>
       </div>
+
+      {/* Concert drawer */}
+      <ConcertDrawer
+        open={showForm}
+        onClose={() => setShowForm(false)}
+        onSubmit={handleAddConcert}
+        error={formError}
+        success={formSuccess}
+      />
 
       {/* Invite modal */}
       {inviteConcertId && (

@@ -4,6 +4,7 @@ import { Concert } from '../types/concert';
 import { User } from '../types/user';
 import { useAuth } from '../context/AuthContext';
 import { ConcertList } from '../components/ConcertList';
+import { Drawer } from '../components/Drawer';
 import { UserForm } from '../components/UserForm';
 import { UserList } from '../components/UserList';
 import { TabButton } from '../components/TabButton';
@@ -22,6 +23,7 @@ export function AdminPage() {
   const [concerts, setConcerts] = useState<Concert[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showUserDrawer, setShowUserDrawer] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -64,22 +66,24 @@ export function AdminPage() {
 
   return (
     <div className="min-h-screen bg-black">
-      <div className="max-w-2xl mx-auto px-4 py-8">
-        <div className="flex items-center justify-between gap-3 mb-6">
-          <h1 className="text-white text-3xl sm:text-4xl font-black tracking-tight min-w-0">
-            KRX LIVE <span className="text-white/50 text-base sm:text-lg font-bold">ADMIN</span>
-          </h1>
-          <Link
-            to="/"
-            className="bg-white/20 text-white px-3 py-2 text-xs font-bold uppercase tracking-wide hover:bg-white/30 transition-colors shrink-0"
-          >
-            Tilbake
-          </Link>
-        </div>
+      <div className="max-w-[600px] mx-auto">
+        <header className="pt-8 pb-4 px-4">
+          <div className="flex items-baseline justify-between gap-2 mb-1">
+            <h1 className="text-white text-4xl sm:text-5xl font-black tracking-tight">
+              KRX LIVE <span className="text-white/75">ADMIN</span>
+            </h1>
+            <Link
+              to="/"
+              className="px-4 py-2 text-xs sm:text-sm font-bold uppercase tracking-wide transition-colors shrink-0 bg-white/20 text-white hover:bg-white/30"
+            >
+              Tilbake
+            </Link>
+          </div>
+        </header>
 
         {/* Tabs */}
-        <div className="mb-6">
-          <div className="flex gap-2 rounded-full overflow-hidden">
+        <div className="px-4 mb-6">
+          <div className="flex gap-2">
             <TabButton
               active={activeTab === 'brukere'}
               onClick={() => setActiveTab('brukere')}
@@ -97,15 +101,18 @@ export function AdminPage() {
 
         {/* Brukere tab */}
         {activeTab === 'brukere' && (
-          <section>
-            <UserForm onSubmit={handleCreateUser} />
-            <div className="mt-4">
-              <UserList
-                users={users}
-                currentUserId={user!.id}
-                onDelete={handleDeleteUser}
-              />
-            </div>
+          <section className="px-4">
+            <button
+              onClick={() => setShowUserDrawer(true)}
+              className="mb-4 px-4 py-2 text-xs sm:text-sm font-bold uppercase tracking-wide transition-colors bg-green-500/30 text-green-400 hover:bg-green-500/40"
+            >
+              Ny bruker
+            </button>
+            <UserList
+              users={users}
+              currentUserId={user!.id}
+              onDelete={handleDeleteUser}
+            />
           </section>
         )}
 
@@ -125,6 +132,15 @@ export function AdminPage() {
           </section>
         )}
       </div>
+
+      {/* User drawer */}
+      <Drawer
+        open={showUserDrawer}
+        onClose={() => setShowUserDrawer(false)}
+        title="Ny bruker"
+      >
+        <UserForm onSubmit={handleCreateUser} />
+      </Drawer>
     </div>
   );
 }
