@@ -1,6 +1,7 @@
 import { Concert, ConcertStatus } from '../types/concert';
 import { SentInvitation } from '../types/user';
 import { ConcertExpandCard } from './ConcertExpandCard';
+import styles from './ConcertList.module.css';
 
 interface ConcertListProps {
   concerts: Concert[];
@@ -16,8 +17,8 @@ interface ConcertListProps {
 
 export function ConcertList({ concerts, statuses, sentInvitations, onStatusChange, onInvite, onEdit, onDelete, isAdmin, resetKey = '' }: ConcertListProps) {
   return (
-    <div className="px-4 pb-8">
-      <div className="space-y-5">
+    <div className={styles.list}>
+      <div className={styles.items}>
         {concerts.map((concert) => (
           <ConcertExpandCard
             key={`${resetKey}-${concert.id}`}
@@ -34,7 +35,7 @@ export function ConcertList({ concerts, statuses, sentInvitations, onStatusChang
       </div>
 
       {concerts.length === 0 && (
-        <div className="text-white text-center py-12 text-sm opacity-60">
+        <div className={styles.empty}>
           Ingen konserter i denne kategorien
         </div>
       )}

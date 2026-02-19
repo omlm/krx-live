@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import styles from './UserForm.module.css';
 
 interface UserFormProps {
   onSubmit: (name: string, password: string) => Promise<void>;
@@ -29,20 +30,16 @@ export function UserForm({ onSubmit }: UserFormProps) {
     }
   }
 
-  const inputClass =
-    'w-full bg-white/10 text-white border border-white/20 px-4 py-3 text-sm ' +
-    'placeholder:text-white/40 focus:outline-none focus:border-white/50 transition-colors';
-
   return (
-    <form onSubmit={handleSubmit} className="space-y-3">
-      <div className="grid grid-cols-2 gap-3">
+    <form onSubmit={handleSubmit} className={styles.form}>
+      <div className={styles.grid}>
         <input
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Brukernavn"
           required
-          className={inputClass}
+          className="input"
         />
         <input
           type="password"
@@ -50,21 +47,21 @@ export function UserForm({ onSubmit }: UserFormProps) {
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Passord"
           required
-          className={inputClass}
+          className="input"
         />
       </div>
 
       {error && (
-        <div className="text-red-400 text-sm bg-red-400/10 px-4 py-2">{error}</div>
+        <div className="alert-error">{error}</div>
       )}
       {success && (
-        <div className="text-green-400 text-sm bg-green-400/10 px-4 py-2">{success}</div>
+        <div className="alert-success">{success}</div>
       )}
 
       <button
         type="submit"
         disabled={submitting || !name || !password}
-        className="w-full bg-white text-black py-3 text-sm font-bold uppercase tracking-wide hover:bg-white/90 transition-colors disabled:opacity-50"
+        className="btn btn-primary"
       >
         {submitting ? 'Oppretter...' : 'Opprett bruker'}
       </button>

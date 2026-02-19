@@ -1,0 +1,11 @@
+.loading {
+  min-height: 100vh;
+  background: var(--color-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loadingText {
+  color: var(--color-text-primary);
+}

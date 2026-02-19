@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { User } from '../types/user';
 import { SentInvitation } from '../types/user';
+import styles from './InviteModal.module.css';
 
 interface InviteModalProps {
   users: User[];
@@ -34,24 +35,21 @@ export function InviteModal({ users, sentInvitations = [], onInvite, onClose }: 
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
-      <div className="absolute inset-0 bg-black/80" onClick={onClose} />
-      <div className="relative bg-neutral-900 border border-white/20 w-full max-w-sm">
-        <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between">
-          <h3 className="text-white text-sm font-bold uppercase tracking-widest">
+    <div className={styles.overlay}>
+      <div className={styles.backdrop} onClick={onClose} />
+      <div className={styles.modal}>
+        <div className={styles.header}>
+          <h3 className={styles.title}>
             Inviter
           </h3>
-          <button
-            onClick={onClose}
-            className="text-white/40 hover:text-white/80 text-sm transition-colors"
-          >
+          <button onClick={onClose} className={styles.closeBtn}>
             ✕
           </button>
         </div>
 
-        <div className="p-2 max-h-60 overflow-y-auto">
+        <div className={styles.list}>
           {users.length === 0 ? (
-            <div className="text-white/40 text-sm text-center py-4">
+            <div className={styles.empty}>
               Ingen brukere å invitere
             </div>
           ) : (
@@ -59,22 +57,19 @@ export function InviteModal({ users, sentInvitations = [], onInvite, onClose }: 
               const invStatus = invStatusByName[user.name];
 
               return (
-                <div
-                  key={user.id}
-                  className="flex items-center justify-between px-3 py-2 hover:bg-white/5 transition-colors"
-                >
-                  <span className="text-white text-sm">{user.name}</span>
+                <div key={user.id} className={styles.listItem}>
+                  <span className={styles.userName}>{user.name}</span>
                   {invStatus === 'accepted' ? (
-                    <span className="text-green-400 text-xs font-bold uppercase">Akseptert</span>
+                    <span className={styles.statusAccepted}>Akseptert</span>
                   ) : sent.has(user.id) || invStatus === 'pending' ? (
-                    <span className="text-white/40 text-xs font-bold uppercase">Sendt</span>
+                    <span className={styles.statusSent}>Sendt</span>
                   ) : invStatus === 'declined' ? (
-                    <span className="text-red-400/60 text-xs font-bold uppercase">Avvist</span>
+                    <span className={styles.statusDeclined}>Avvist</span>
                   ) : (
                     <button
                       onClick={() => handleInvite(user.id)}
                       disabled={sending === user.id}
-                      className="text-white/60 text-xs font-bold uppercase tracking-wide hover:text-white transition-colors disabled:opacity-50"
+                      className={styles.inviteBtn}
                     >
                       {sending === user.id ? '...' : 'Inviter'}
                     </button>
@@ -86,7 +81,7 @@ export function InviteModal({ users, sentInvitations = [], onInvite, onClose }: 
         </div>
 
         {error && (
-          <div className="px-4 py-2 text-red-400 text-xs bg-red-400/10">
+          <div className="alert-error">
             {error}
           </div>
         )}

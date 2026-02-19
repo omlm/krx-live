@@ -8,6 +8,7 @@ import { ConcertDrawer } from '../components/ConcertDrawer';
 import { TabButton } from '../components/TabButton';
 import { InvitationCard } from '../components/InvitationCard';
 import { InviteModal } from '../components/InviteModal';
+import { ConcertFilters } from '../components/ConcertFilters';
 import {
   loadUserConcerts,
   loadAllConcerts,
@@ -20,6 +21,7 @@ import {
   addConcert,
   loadSentInvitations,
 } from '../lib/api';
+import styles from './DashboardPage.module.css';
 
 export function DashboardPage() {
   const { user, logout } = useAuth();
@@ -34,6 +36,8 @@ export function DashboardPage() {
   const [showForm, setShowForm] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [formSuccess, setFormSuccess] = useState<string | null>(null);
+  const [genreFilter, setGenreFilter] = useState('');
+  const [venueFilter, setVenueFilter] = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -86,7 +90,6 @@ export function DashboardPage() {
       } else {
         setStatuses(prev => ({ ...prev, [concertId]: status }));
       }
-      // Reload my concerts to reflect changes
       const myData = await loadUserConcerts(user!.id);
       setMyConcerts(myData);
     } catch (error) {
@@ -116,38 +119,41 @@ export function DashboardPage() {
     setSentInvitations(sentData);
   }
 
-  const displayConcerts = activeTab === 'mine' ? myConcerts : allConcerts;
+  const baseConcerts = activeTab === 'mine' ? myConcerts : allConcerts;
+  const displayConcerts = baseConcerts.filter((c) => {
+    if (genreFilter && c.genre !== genreFilter) return false;
+    if (venueFilter && c.venue !== venueFilter) return false;
+    return true;
+  });
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-white">Laster...</div>
+      <div className={styles.loading}>
+        <div className={styles.loadingText}>Laster...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-black relative">
-      {/* Bakgrunnsbilde med overlay */}
+    <div className={styles.page}>
+      {/* Background image with overlay */}
       <div
-        className="fixed inset-0 bg-cover bg-center bg-no-repeat opacity-30"
+        className={styles.bgImage}
         style={{
           backgroundImage: 'url(/bg.jpg)',
           backgroundPosition: 'center 20%',
         }}
       />
-      <div className="fixed inset-0 bg-black/50" />
+      <div className={styles.bgOverlay} />
 
-      <div className="relative z-10 max-w-[600px] mx-auto">
+      <div className={styles.content}>
         {/* Header */}
-        <header className="pt-8 pb-4 px-4">
-          <div className="flex items-baseline justify-between gap-2 mb-1">
-            <h1 className="text-white text-4xl sm:text-5xl font-black tracking-tight">
-              KRX LIVE
-            </h1>
+        <header className={styles.header}>
+          <div className={styles.headerRow}>
+            <h1 className={styles.title}>KRX LIVE</h1>
             <button
               onClick={() => setShowForm(true)}
-              className="px-4 py-2 text-xs sm:text-sm font-bold uppercase tracking-wide transition-colors shrink-0 bg-green-500/30 text-green-400 hover:bg-green-500/40"
+              className={styles.newConcertBtn}
             >
               Ny konsert
             </button>
@@ -155,20 +161,18 @@ export function DashboardPage() {
         </header>
 
         {formSuccess && !showForm && (
-          <div className="px-4 mb-6">
-            <div className="text-green-400 text-sm bg-green-400/10 px-4 py-2">
-              {formSuccess}
-            </div>
+          <div className={styles.successBanner}>
+            <div className="alert-success">{formSuccess}</div>
           </div>
         )}
 
         {/* Invitations */}
         {invitations.length > 0 && (
-          <div className="px-4 mb-6">
-            <h2 className="text-white text-sm font-bold mb-3 uppercase tracking-widest">
+          <div className={styles.invitationsSection}>
+            <h2 className={styles.invitationsHeading}>
               Invitasjoner ({invitations.length})
             </h2>
-            <div className="space-y-2">
+            <div className={styles.invitationsList}>
               {invitations.map((inv) => (
                 <InvitationCard
                   key={inv.id}
@@ -181,22 +185,31 @@ export function DashboardPage() {
         )}
 
         {/* Tabs */}
-        <div className="px-4 mb-6">
-          <div className="flex gap-2">
+        <div className={styles.tabs}>
+          <div className={styles.tabRow}>
             <TabButton
               active={activeTab === 'mine'}
-              onClick={() => setActiveTab('mine')}
+              onClick={() => { setActiveTab('mine'); setGenreFilter(''); setVenueFilter(''); }}
             >
               MINE KONSERTER
             </TabButton>
             <TabButton
               active={activeTab === 'alle'}
-              onClick={() => setActiveTab('alle')}
+              onClick={() => { setActiveTab('alle'); setGenreFilter(''); setVenueFilter(''); }}
             >
               ALLE
             </TabButton>
           </div>
         </div>
+
+        {/* Filters */}
+        <ConcertFilters
+          concerts={baseConcerts}
+          genreFilter={genreFilter}
+          venueFilter={venueFilter}
+          onGenreChange={setGenreFilter}
+          onVenueChange={setVenueFilter}
+        />
 
         {/* Concert List */}
         <ConcertList
@@ -209,18 +222,12 @@ export function DashboardPage() {
         />
 
         {/* Footer */}
-        <footer className="px-4 py-8 flex items-center justify-center gap-4">
-          <button
-            onClick={logout}
-            className="text-white/30 text-xs uppercase tracking-wide hover:text-white/60 transition-colors"
-          >
+        <footer className={styles.footer}>
+          <button onClick={logout} className={styles.footerBtn}>
             Logg ut
           </button>
           {user?.is_admin && (
-            <Link
-              to="/admin"
-              className="text-white/30 text-xs uppercase tracking-wide hover:text-white/60 transition-colors"
-            >
+            <Link to="/admin" className={styles.footerLink}>
               Admin
             </Link>
           )}

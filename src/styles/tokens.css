@@ -1,0 +1,126 @@
+:root {
+  /* =========================================
+     FARGER — Bakgrunner
+  ========================================= */
+  --color-bg:                     #000000;
+  --color-surface:                #171717;
+
+  /* =========================================
+     FARGER — Overlays (hvit/alpha på mørk)
+  ========================================= */
+  --color-overlay-faint:          rgba(255, 255, 255, 0.05);
+  --color-overlay-weak:           rgba(255, 255, 255, 0.10);
+  --color-overlay-medium:         rgba(255, 255, 255, 0.20);
+  --color-overlay-strong:         rgba(255, 255, 255, 0.30);
+
+  /* =========================================
+     FARGER — Tekst
+  ========================================= */
+  --color-text-primary:           #ffffff;
+  --color-text-secondary:         rgba(255, 255, 255, 0.60);
+  --color-text-muted:             rgba(255, 255, 255, 0.40);
+  --color-text-faint:             rgba(255, 255, 255, 0.30);
+  --color-text-subtle:            rgba(255, 255, 255, 0.75);
+  --color-text-label:             rgba(255, 255, 255, 0.70);
+  --color-text-dark:              #1f2937; /* kun ConcertCard (lyst kort) */
+
+  /* =========================================
+     FARGER — Kantlinjer
+  ========================================= */
+  --color-border:                 rgba(255, 255, 255, 0.20);
+  --color-border-weak:            rgba(255, 255, 255, 0.10);
+  --color-border-focus:           rgba(255, 255, 255, 0.50);
+
+  /* =========================================
+     FARGER — Suksess (grønn)
+  ========================================= */
+  --color-success:                #4ade80;
+  --color-success-bg:             rgba(74, 222, 128, 0.10);
+  --color-success-surface:        rgba(34, 197, 94, 0.20);
+  --color-success-surface-hover:  rgba(34, 197, 94, 0.30);
+  --color-success-surface-strong: rgba(34, 197, 94, 0.40);
+
+  /* =========================================
+     FARGER — Feil/fareknapp (rød)
+  ========================================= */
+  --color-error:                  #f87171;
+  --color-error-hover:            #fca5a5;
+  --color-error-bg:               rgba(248, 113, 113, 0.10);
+  --color-error-surface:          rgba(239, 68, 68, 0.20);
+  --color-error-surface-hover:    rgba(239, 68, 68, 0.30);
+
+  /* =========================================
+     FARGER — Overlegg (modal/konsert)
+  ========================================= */
+  --color-modal-overlay:          rgba(0, 0, 0, 0.80);
+  --color-concert-bg:             rgba(0, 0, 0, 0.80);
+  --color-concert-bg-hover:       rgba(0, 0, 0, 0.90);
+
+  /* =========================================
+     SPACING
+  ========================================= */
+  --space-1:  0.25rem;
+  --space-2:  0.5rem;
+  --space-3:  0.75rem;
+  --space-4:  1rem;
+  --space-5:  1.25rem;
+  --space-6:  1.5rem;
+  --space-8:  2rem;
+
+  /* =========================================
+     TYPOGRAFI — Fonter
+  ========================================= */
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+               Helvetica, Arial, sans-serif;
+
+  /* =========================================
+     TYPOGRAFI — Størrelser
+  ========================================= */
+  --text-xs:   0.75rem;
+  --text-sm:   0.875rem;
+  --text-base: 1rem;
+  --text-lg:   1.125rem;
+  --text-3xl:  1.875rem;
+  --text-4xl:  2.25rem;
+  --text-5xl:  3rem;
+
+  /* =========================================
+     TYPOGRAFI — Vekter
+  ========================================= */
+  --font-medium: 500;
+  --font-bold:   700;
+  --font-black:  900;
+
+  /* =========================================
+     TYPOGRAFI — Bokstavavstand
+  ========================================= */
+  --tracking-tight:   -0.025em;
+  --tracking-wide:     0.05em;
+  --tracking-widest:   0.1em;
+
+  /* =========================================
+     ANIMASJON
+  ========================================= */
+  --transition-colors:    color 0.15s ease,
+                          background-color 0.15s ease,
+                          border-color 0.15s ease;
+  --transition-transform: transform 0.3s ease-out;
+
+  /* =========================================
+     BORDER RADIUS
+  ========================================= */
+  --radius-sm:   0.125rem;
+  --radius-full: 9999px;
+  --radius-2xl:  1rem;
+
+  /* =========================================
+     SKYGGER
+  ========================================= */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+
+  /* =========================================
+     LAYOUT
+  ========================================= */
+  --drawer-width:      480px;
+  --content-max-width: 600px;
+}

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Invitation } from '../types/user';
+import styles from './InvitationCard.module.css';
 
 interface InvitationCardProps {
   invitation: Invitation;
@@ -16,29 +17,29 @@ export function InvitationCard({ invitation, onRespond }: InvitationCardProps) {
   }
 
   return (
-    <div className="bg-white/10 px-4 py-3">
-      <div className="text-white text-sm mb-1">
-        <span className="font-bold">{invitation.from_user_name}</span>
+    <div className={styles.card}>
+      <div className={styles.sender}>
+        <span className={styles.bold}>{invitation.from_user_name}</span>
         {' '}inviterer deg til
       </div>
-      <div className="text-white font-bold uppercase tracking-tight">
+      <div className={styles.concertName}>
         {invitation.concert?.artist_name} @ {invitation.concert?.venue}
       </div>
-      <div className="text-white/50 text-xs mb-3">
+      <div className={styles.datetime}>
         {invitation.concert?.date} {invitation.concert?.time}
       </div>
-      <div className="flex gap-2">
+      <div className={styles.actions}>
         <button
           onClick={() => handleRespond('accepted')}
           disabled={responding}
-          className="bg-green-500/20 text-green-400 px-4 py-1.5 text-xs font-bold uppercase tracking-wide hover:bg-green-500/30 transition-colors disabled:opacity-50"
+          className="btn btn-success"
         >
           Aksepter
         </button>
         <button
           onClick={() => handleRespond('declined')}
           disabled={responding}
-          className="bg-white/10 text-white/60 px-4 py-1.5 text-xs font-bold uppercase tracking-wide hover:bg-white/20 transition-colors disabled:opacity-50"
+          className="btn btn-ghost"
         >
           Avslå
         </button>

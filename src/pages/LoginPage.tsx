@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import styles from './LoginPage.module.css';
 
 export function LoginPage() {
   const [name, setName] = useState('');
@@ -25,21 +26,13 @@ export function LoginPage() {
     }
   }
 
-  const inputClass =
-    'w-full bg-white/10 text-white border border-white/20 px-4 py-3 text-sm ' +
-    'placeholder:text-white/40 focus:outline-none focus:border-white/50 transition-colors';
-
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center px-4">
-      <div className="w-full max-w-sm">
-        <h1 className="text-white text-5xl font-black tracking-tight mb-2 text-center">
-          KRX LIVE
-        </h1>
-        <p className="text-white/40 text-sm text-center mb-8 uppercase tracking-widest">
-          Logg inn
-        </p>
+    <div className={styles.page}>
+      <div className={styles.container}>
+        <h1 className={styles.title}>KRX LIVE</h1>
+        <p className={styles.subtitle}>Logg inn</p>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className={styles.form}>
           <div>
             <input
               type="text"
@@ -48,7 +41,7 @@ export function LoginPage() {
               placeholder="Brukernavn"
               required
               autoFocus
-              className={inputClass}
+              className="input"
             />
           </div>
           <div>
@@ -58,20 +51,18 @@ export function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Passord"
               required
-              className={inputClass}
+              className="input"
             />
           </div>
 
           {error && (
-            <div className="text-red-400 text-sm bg-red-400/10 px-4 py-2">
-              {error}
-            </div>
+            <div className="alert-error">{error}</div>
           )}
 
           <button
             type="submit"
             disabled={loading || !name || !password}
-            className="w-full bg-white text-black py-3 text-sm font-bold uppercase tracking-wide hover:bg-white/90 transition-colors disabled:opacity-50"
+            className="btn btn-primary"
           >
             {loading ? 'Logger inn...' : 'Logg inn'}
           </button>

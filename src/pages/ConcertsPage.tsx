@@ -15,6 +15,7 @@ import {
   sendInvitation,
   loadAllUsers,
 } from '../lib/api';
+import styles from './ConcertsPage.module.css';
 
 export function ConcertsPage() {
   const { user } = useAuth();
@@ -87,40 +88,37 @@ export function ConcertsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-white">Laster...</div>
+      <div className={styles.loading}>
+        <div className={styles.loadingText}>Laster...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-black">
-      <div className="max-w-2xl mx-auto px-4 py-8">
+    <div className={styles.page}>
+      <div className={styles.inner}>
         {/* Header */}
-        <div className="flex items-center justify-between gap-3 mb-6">
-          <h1 className="text-white text-3xl sm:text-4xl font-black tracking-tight min-w-0">
-            KRX LIVE <span className="text-white/50 text-base sm:text-lg font-bold">KONSERTER</span>
+        <div className={styles.headerRow}>
+          <h1 className={styles.title}>
+            KRX LIVE <span className={styles.titleSub}>KONSERTER</span>
           </h1>
-          <Link
-            to="/"
-            className="bg-white/20 text-white px-3 py-2 text-xs font-bold uppercase tracking-wide hover:bg-white/30 transition-colors shrink-0"
-          >
+          <Link to="/" className={styles.backLink}>
             Tilbake
           </Link>
         </div>
 
         {/* Add concert toggle */}
-        <div className="mb-6">
+        <div className={styles.toggleRow}>
           <button
             onClick={() => setShowForm(!showForm)}
-            className="bg-white/20 text-white px-4 py-2 text-sm font-bold uppercase tracking-wide hover:bg-white/30 transition-colors"
+            className={styles.toggleBtn}
           >
             {showForm ? 'Avbryt' : '+ Legg til konsert'}
           </button>
         </div>
 
         {showForm && (
-          <div className="mb-8">
+          <div className={styles.formWrapper}>
             <ConcertForm
               onSubmit={handleAddConcert}
               error={formError}
@@ -130,18 +128,16 @@ export function ConcertsPage() {
         )}
 
         {formSuccess && !showForm && (
-          <div className="text-green-400 text-sm bg-green-400/10 px-4 py-2 mb-6">
-            {formSuccess}
+          <div className={styles.successBanner}>
+            <div className="alert-success">{formSuccess}</div>
           </div>
         )}
 
         {/* All concerts grouped by date */}
         {Object.entries(groupedConcerts).map(([dateLabel, dateConcerts]) => (
-          <div key={dateLabel} className="mb-6">
-            <h2 className="text-white text-sm font-bold mb-3 uppercase tracking-widest px-0">
-              {dateLabel}
-            </h2>
-            <div className="space-y-1">
+          <div key={dateLabel} className={styles.dateGroup}>
+            <h2 className={styles.dateHeading}>{dateLabel}</h2>
+            <div className={styles.dateItems}>
               {dateConcerts.map((concert: Concert) => (
                 <ConcertExpandCard
                   key={concert.id}
@@ -156,7 +152,7 @@ export function ConcertsPage() {
         ))}
 
         {concerts.length === 0 && (
-          <div className="text-white/40 text-sm text-center py-12">
+          <div className={styles.empty}>
             Ingen konserter lagt til enda.
           </div>
         )}

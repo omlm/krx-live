@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Concert } from '../types/concert';
+import styles from './ConcertForm.module.css';
 
 export type ConcertFormData = Omit<Concert, 'id' | 'created_at' | 'user_status'>;
 
@@ -53,17 +54,11 @@ export function ConcertForm({ onSubmit, error, success, initialData, submitLabel
     }
   }
 
-  const inputClass =
-    'w-full bg-white/10 text-white border border-white/20 px-4 py-3 text-sm ' +
-    'placeholder:text-white/40 focus:outline-none focus:border-white/50 transition-colors';
-
-  const labelClass = 'block text-white/70 text-xs font-bold uppercase tracking-wide mb-1';
-
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <form onSubmit={handleSubmit} className={styles.form}>
+      <div className={styles.gridSm}>
         <div>
-          <label className={labelClass}>Artist *</label>
+          <label className="label">Artist *</label>
           <input
             type="text"
             name="artist_name"
@@ -71,11 +66,11 @@ export function ConcertForm({ onSubmit, error, success, initialData, submitLabel
             onChange={handleChange}
             placeholder="ELEPHANT9"
             required
-            className={inputClass}
+            className="input"
           />
         </div>
         <div>
-          <label className={labelClass}>Sted *</label>
+          <label className="label">Sted *</label>
           <input
             type="text"
             name="venue"
@@ -83,39 +78,39 @@ export function ConcertForm({ onSubmit, error, success, initialData, submitLabel
             onChange={handleChange}
             placeholder="VAKTBUA"
             required
-            className={inputClass}
+            className="input"
           />
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className={styles.grid2}>
         <div>
-          <label className={labelClass}>Dato *</label>
+          <label className="label">Dato *</label>
           <input
             type="date"
             name="date"
             value={form.date}
             onChange={handleChange}
             required
-            className={inputClass}
+            className="input"
           />
         </div>
         <div>
-          <label className={labelClass}>Klokkeslett *</label>
+          <label className="label">Klokkeslett *</label>
           <input
             type="time"
             name="time"
             value={form.time}
             onChange={handleChange}
             required
-            className={inputClass}
+            className="input"
           />
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className={styles.gridSm}>
         <div>
-          <label className={labelClass}>Arrangør *</label>
+          <label className="label">Arrangør *</label>
           <input
             type="text"
             name="organizer"
@@ -123,65 +118,65 @@ export function ConcertForm({ onSubmit, error, success, initialData, submitLabel
             onChange={handleChange}
             placeholder="DIRTY OLD TOWN"
             required
-            className={inputClass}
+            className="input"
           />
         </div>
         <div>
-          <label className={labelClass}>Sjanger</label>
+          <label className="label">Sjanger</label>
           <input
             type="text"
             name="genre"
             value={form.genre || ''}
             onChange={handleChange}
             placeholder="Jazz"
-            className={inputClass}
+            className="input"
           />
         </div>
       </div>
 
       <div>
-        <label className={labelClass}>Beskrivelse</label>
+        <label className="label">Beskrivelse</label>
         <textarea
           name="description"
           value={form.description}
           onChange={handleChange}
           placeholder="Kort beskrivelse av konserten..."
           rows={3}
-          className={inputClass}
+          className="input"
         />
       </div>
 
       <div>
-        <label className={labelClass}>Bilde-URL</label>
+        <label className="label">Bilde-URL</label>
         <input
           type="url"
           name="image_url"
           value={form.image_url}
           onChange={handleChange}
           placeholder="https://..."
-          className={inputClass}
+          className="input"
         />
       </div>
 
       <div>
-        <label className={labelClass}>Original-URL</label>
+        <label className="label">Original-URL</label>
         <input
           type="url"
           name="original_url"
           value={form.original_url || ''}
           onChange={handleChange}
           placeholder="https://..."
-          className={inputClass}
+          className="input"
         />
       </div>
 
       {error && (
-        <div className="text-red-400 text-sm bg-red-400/10 px-4 py-2">
+        <div className="alert-error">
           {error}
         </div>
       )}
       {success && (
-        <div className="text-green-400 text-sm bg-green-400/10 px-4 py-2">
+        <div className="alert-success">
           {success}
         </div>
       )}
@@ -189,7 +184,7 @@ export function ConcertForm({ onSubmit, error, success, initialData, submitLabel
       <button
         type="submit"
         disabled={submitting}
-        className="w-full bg-white text-black py-3 text-sm font-bold uppercase tracking-wide hover:bg-white/90 transition-colors disabled:opacity-50"
+        className="btn btn-primary"
       >
         {submitting ? 'Lagrer...' : (submitLabel || 'Legg til konsert')}
       </button>

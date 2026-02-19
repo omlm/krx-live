@@ -1,0 +1,32 @@
+.card {
+  background: var(--color-overlay-weak);
+  padding: var(--space-3) var(--space-4);
+}
+
+.sender {
+  color: var(--color-text-primary);
+  font-size: var(--text-sm);
+  margin-bottom: var(--space-1);
+}
+
+.bold {
+  font-weight: var(--font-bold);
+}
+
+.concertName {
+  color: var(--color-text-primary);
+  font-weight: var(--font-bold);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-tight);
+}
+
+.datetime {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: var(--text-xs);
+  margin-bottom: var(--space-3);
+}
+
+.actions {
+  display: flex;
+  gap: var(--space-2);
+}

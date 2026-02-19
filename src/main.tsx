@@ -8,7 +8,7 @@ import { DashboardPage } from './pages/DashboardPage'
 import { ConcertsPage } from './pages/ConcertsPage'
 import { AdminPage } from './pages/AdminPage'
 import { Analytics } from '@vercel/analytics/react'
-import './index.css'
+import './styles/global.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { User } from '../types/user';
+import styles from './UserList.module.css';
 
 interface UserListProps {
   users: User[];
@@ -19,24 +20,21 @@ export function UserList({ users, currentUserId, onDelete }: UserListProps) {
 
   if (users.length === 0) {
     return (
-      <div className="text-white/60 text-sm text-center py-8">
+      <div className={styles.empty}>
         Ingen brukere.
       </div>
     );
   }
 
   return (
-    <div className="space-y-2">
+    <div className={styles.list}>
       {users.map((user) => (
-        <div
-          key={user.id}
-          className="bg-white/10 px-4 py-3 flex items-center justify-between"
-        >
-          <div className="flex-1 min-w-0">
-            <div className="text-white text-sm font-bold truncate">
+        <div key={user.id} className={styles.item}>
+          <div className={styles.itemMain}>
+            <div className={styles.name}>
               {user.name}
               {user.is_admin && (
-                <span className="ml-2 text-white/40 text-xs font-normal uppercase">Admin</span>
+                <span className={styles.adminBadge}>Admin</span>
               )}
             </div>
           </div>
@@ -44,7 +42,7 @@ export function UserList({ users, currentUserId, onDelete }: UserListProps) {
             <button
               onClick={() => handleDelete(user.id, user.name)}
               disabled={deletingId === user.id}
-              className="ml-4 text-red-400 text-xs font-bold uppercase tracking-wide hover:text-red-300 transition-colors disabled:opacity-50"
+              className={styles.deleteBtn}
             >
               {deletingId === user.id ? '...' : 'Slett'}
             </button>

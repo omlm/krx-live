@@ -2,6 +2,8 @@ import { useState, useRef } from 'react';
 import { Concert, ConcertStatus } from '../types/concert';
 import { SentInvitation } from '../types/user';
 import { ConcertForm } from './ConcertForm';
+import { cx } from '../lib/cx';
+import styles from './ConcertExpandCard.module.css';
 
 interface ConcertExpandCardProps {
   concert: Concert;
@@ -49,23 +51,21 @@ export function ConcertExpandCard({
 
   return (
     <div
-      className="bg-white/5 cursor-pointer transition-colors hover:bg-white/[0.08]"
+      className={styles.card}
       onClick={() => { if (!editing) setExpanded(!expanded); }}
     >
       {/* Collapsed header */}
-      <div className="flex items-center justify-between px-4 py-3">
-        <div className="flex items-center gap-3 min-w-0">
-          <span className="text-white/50 text-sm font-medium tabular-nums shrink-0">
+      <div className={styles.header}>
+        <div className={styles.headerLeft}>
+          <span className={styles.date}>
             {day}
           </span>
-          <span className="text-white text-sm sm:text-base font-bold uppercase tracking-tight truncate">
+          <span className={styles.artist}>
             {concert.artist_name}
           </span>
         </div>
         <svg
-          className={`w-5 h-5 text-white/40 shrink-0 ml-3 transition-transform duration-300 ease-out ${
-            expanded ? 'rotate-180' : ''
-          }`}
+          className={cx(styles.chevron, expanded && styles.chevronExpanded)}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -77,12 +77,12 @@ export function ConcertExpandCard({
 
       {/* Animated expand/collapse */}
       <div
-        className="grid transition-[grid-template-rows] duration-300 ease-out"
+        className={styles.expandGrid}
         style={{ gridTemplateRows: expanded ? '1fr' : '0fr' }}
       >
-        <div className="overflow-hidden">
-          <div ref={contentRef} className="px-4 pb-4" onClick={(e) => e.stopPropagation()}>
-            <div className="border-t border-white/10 pt-3">
+        <div className={styles.expandInner}>
+          <div ref={contentRef} className={styles.content} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.divider}>
               {editing ? (
                 <div>
                   <ConcertForm
@@ -104,7 +104,7 @@ export function ConcertExpandCard({
                   />
                   <button
                     onClick={() => setEditing(false)}
-                    className="mt-2 px-3 py-1.5 text-xs font-bold uppercase tracking-wide bg-white/10 text-white/50 hover:bg-white/20 transition-colors"
+                    className={cx('btn btn-ghost', styles.cancelEdit)}
                   >
                     Avbryt
                   </button>
@@ -116,47 +116,47 @@ export function ConcertExpandCard({
                       href={concert.original_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-white/60 text-sm hover:text-white/80 underline transition-colors"
+                      className={styles.venueLink}
                     >
                       {concert.venue} {concert.time}
                     </a>
                   ) : (
-                    <div className="text-white/60 text-sm">
+                    <div className={styles.venueText}>
                       {concert.venue} {concert.time}
                     </div>
                   )}
 
                   {concert.description && (
-                    <p className="text-white/40 text-sm mt-2 leading-relaxed">
+                    <p className={styles.description}>
                       {concert.description}
                     </p>
                   )}
 
                   {concert.organizer && (
-                    <p className="text-white/30 text-xs mt-2 uppercase tracking-wide">
+                    <p className={styles.organizer}>
                       Arr: {concert.organizer}
                     </p>
                   )}
 
                   {/* Sent invitations */}
                   {sentInvitations && sentInvitations.length > 0 && (
-                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-3">
-                      <span className="text-white/30 text-xs uppercase tracking-wide">Invitert:</span>
+                    <div className={styles.inviteRow}>
+                      <span className={styles.inviteLabel}>Invitert:</span>
                       {sentInvitations.map((inv) => (
-                        <span key={inv.id} className="flex items-center gap-1 text-xs">
-                          <span className="text-white/50">{inv.to_user_name}</span>
+                        <span key={inv.id} className={styles.inviteItem}>
+                          <span className={styles.inviteName}>{inv.to_user_name}</span>
                           {inv.status === 'accepted' && (
-                            <svg className="w-3.5 h-3.5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                            <svg className={styles.iconAccepted} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                               <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                             </svg>
                           )}
                           {inv.status === 'declined' && (
-                            <svg className="w-3.5 h-3.5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                            <svg className={styles.iconDeclined} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                             </svg>
                           )}
                           {inv.status === 'pending' && (
-                            <span className="text-white/30 text-[10px]">...</span>
+                            <span className={styles.statusPending}>...</span>
                           )}
                         </span>
                       ))}
@@ -164,13 +164,13 @@ export function ConcertExpandCard({
                   )}
 
                   {/* Actions */}
-                  <div className="flex flex-wrap items-center gap-2 mt-4">
+                  <div className={styles.actions}>
                     {hasActions && (
                       <>
                         {onStatusChange && status !== 'going' && (
                           <button
                             onClick={() => onStatusChange(concert.id, 'going')}
-                            className="px-3 py-1.5 text-xs font-bold uppercase tracking-wide transition-colors bg-white/10 text-white/50 hover:bg-white/20"
+                            className="btn btn-ghost"
                           >
                             Skal gå
                           </button>
@@ -178,7 +178,7 @@ export function ConcertExpandCard({
                         {onInvite && (
                           <button
                             onClick={() => onInvite(concert.id)}
-                            className="px-3 py-1.5 text-xs font-bold uppercase tracking-wide bg-white/10 text-white/50 hover:bg-white/20 transition-colors"
+                            className="btn btn-ghost"
                           >
                             Inviter
                           </button>
@@ -186,7 +186,7 @@ export function ConcertExpandCard({
                         {onStatusChange && status === 'going' && (
                           <button
                             onClick={() => onStatusChange(concert.id, null)}
-                            className="px-3 py-1.5 text-xs font-bold uppercase tracking-wide bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors"
+                            className="btn btn-danger"
                           >
                             Skal ikke gå
                           </button>
@@ -196,7 +196,7 @@ export function ConcertExpandCard({
                     {isAdmin && onEdit && (
                       <button
                         onClick={() => setEditing(true)}
-                        className="px-3 py-1.5 text-xs font-bold uppercase tracking-wide bg-white/10 text-white/50 hover:bg-white/20 transition-colors"
+                        className="btn btn-ghost"
                       >
                         Endre
                       </button>
@@ -208,7 +208,7 @@ export function ConcertExpandCard({
                             onDelete(concert.id);
                           }
                         }}
-                        className="px-3 py-1.5 text-xs font-bold uppercase tracking-wide bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors"
+                        className="btn btn-danger"
                       >
                         Slett
                       </button>

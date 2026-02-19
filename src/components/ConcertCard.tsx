@@ -1,4 +1,5 @@
 import { Concert } from '../types/concert';
+import styles from './ConcertCard.module.css';
 
 interface ConcertCardProps {
   concert: Concert;
@@ -6,14 +7,14 @@ interface ConcertCardProps {
 
 export function ConcertCard({ concert }: ConcertCardProps) {
   return (
-    <div className="bg-white rounded-sm p-5 mb-4 shadow-sm">
-      <h3 className="text-lg font-bold mb-2 uppercase tracking-tight">
+    <div className={styles.card}>
+      <h3 className={styles.title}>
         {concert.artist_name} @ {concert.venue}
       </h3>
-      <p className="text-sm text-gray-800 mb-3 leading-relaxed">
+      <p className={styles.description}>
         {concert.description}
       </p>
-      <p className="text-xs font-medium uppercase tracking-wide">
+      <p className={styles.meta}>
         ARR: {concert.organizer}
       </p>
     </div>

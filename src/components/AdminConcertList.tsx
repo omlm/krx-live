@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Concert } from '../types/concert';
+import styles from './AdminConcertList.module.css';
 
 interface AdminConcertListProps {
   concerts: Concert[];
@@ -18,24 +19,21 @@ export function AdminConcertList({ concerts, onDelete }: AdminConcertListProps) 
 
   if (concerts.length === 0) {
     return (
-      <div className="text-white/60 text-sm text-center py-8">
+      <div className={styles.empty}>
         Ingen konserter lagt til enda.
       </div>
     );
   }
 
   return (
-    <div className="space-y-2">
+    <div className={styles.list}>
       {concerts.map((concert) => (
-        <div
-          key={concert.id}
-          className="bg-white/10 px-4 py-3 flex items-center justify-between"
-        >
-          <div className="flex-1 min-w-0">
-            <div className="text-white text-sm font-bold uppercase tracking-tight truncate">
+        <div key={concert.id} className={styles.item}>
+          <div className={styles.itemMain}>
+            <div className={styles.concertName}>
               {concert.artist_name} @ {concert.venue}
             </div>
-            <div className="text-white/50 text-xs">
+            <div className={styles.meta}>
               {concert.date} {concert.time}
               {concert.organizer && (
                 <> &middot; {concert.organizer}</>
@@ -45,7 +43,7 @@ export function AdminConcertList({ concerts, onDelete }: AdminConcertListProps) 
           <button
             onClick={() => handleDelete(concert.id, concert.artist_name)}
             disabled={deletingId === concert.id}
-            className="ml-4 text-red-400 text-xs font-bold uppercase tracking-wide hover:text-red-300 transition-colors disabled:opacity-50"
+            className={styles.deleteBtn}
           >
             {deletingId === concert.id ? '...' : 'Slett'}
           </button>
